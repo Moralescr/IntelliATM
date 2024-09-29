@@ -1,17 +1,26 @@
+import dotenv from 'dotenv';
 import express from "express";
-import path from 'path'
 import cors from 'cors';
 
-//Import local files
-import routes from './src/routes/routes.js';
+//Local files
+import router from './src/routes/connectionRoutes.js';
+import mainRoutes from './src/routes/mainRoutes.js';
 
+dotenv.config();
+
+const PORT = 3000;
 const app = express();
 
-//Use cors to http requests
+//Middlewares
+app.use(express.json());
+app.use(express.text());
 app.use(cors());
 
 //Routes
-app.use(routes);
+app.use("/", mainRoutes);
+app.use("/connect", router);
 
 //Server 
-app.listen(3000, () => console.log('Server running on port', 3000));
+app.listen(PORT, () => 
+    console.log(`Server running on port ${PORT}`)
+)
