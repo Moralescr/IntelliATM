@@ -1,4 +1,3 @@
-import { STATUS_CODES } from 'http';
 import net from 'net';
 
 let client = "";
@@ -6,27 +5,30 @@ let isConnected = false;
 
 //Set connection with host
 export function connection(host, port) {
-    
-    //Create connection
-    client = net.createConnection(port, host);
-    if (isConnected == false) {
-        client.on('connect', (req, res)=> {
-            console.log('ATM conectado'); 
-        });
 
+    if (!isConnected) {
+        //Create connection
+        client = net.createConnection(port, host, () => {
+            console.log('ATM CONECTADO');
+            isConnected = true;  
+            setTimeout(() => {
+                console.log("Delayed for 1 second.");
+            }, "3000");
+        });
+        
         //Connection error
-        client.on('error', (e) => {
-            console.log("ATM se ha desconectado", e.message);
+        client.on('error', (error) => {
+            console.log("ATM se ha desconectado: ", error.message);
         });  
-    
+
         // IBM i response
         client.on('data', (data) => {
-            console.log("servidor dice:", data);
+            console.log("servidor dice:", data.toString());
             sendMessage("Datos recibidos");
-        });
-
-        return isConnected;
+        });7
     }
+
+    return isConnected;
 }
 
 //Get message length (Header)
@@ -34,9 +36,12 @@ export function getOutgoingMessageLength(data) {
     return String.fromCharCode(data.length / 256) + String.fromCharCode(data.length % 256);
 }
 
-//Messge request and response
+//Message request and response
+// Write(): Returns "true" if the message was sent.
 export function sendMessage(data) {
     let binary_data = "";
-    binary_data = Buffer(getOutgoingMessageLength(data) + data, 'binary');
-    client.write(binary_data);
+    binary_data = Buffer.from(getOutgoingMessageLength(data) + data, 'binary');
+    let isMessageSent = client.write(binary_data);
+    console.log("Respuesta: ", isMessageSent);
+    return isMessageSent;
 }
