@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { connection } from '../modules/connectionModule.js';
+import {connection, isConnected} from '../modules/connectionModule.js';
 
 const router = Router();
 
@@ -8,8 +8,12 @@ router.post("/", (req, res) => {
     let host = req.body.host;
     let port = req.body.port;
 
-    let isConnected = connection(host, port);       
-    return res.send(isConnected);
+    //Set ATM connection
+    connection(host, port); 
+
+    setTimeout(() => {
+        return res.send(isConnected);
+    }, 3000);
 });
 
 export default router;

@@ -5,6 +5,7 @@ import cors from 'cors';
 //Local files
 import mainRoutes from './src/routes/mainRoutes.js';
 import router from './src/routes/connectionRoutes.js';
+import atmRoutes from './src/routes/connectionRoutes.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cors());
 //Routes
 app.use("/", mainRoutes);
 app.use("/connect", router);
+app.use("/atm", atmRoutes);
 
 //Server 
 app.listen(PORT, () => 
