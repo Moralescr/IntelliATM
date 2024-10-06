@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {messageRequestResponse} from '../modules/atmModule.js';
+import {getATMessageToReply} from '../modules/atmModule.js';
 
 const atmRoutes = Router();
 

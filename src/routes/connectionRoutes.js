@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import {connection, isConnected} from '../modules/connectionModule.js';
 
-const router = Router();
+const connectionRoutes = Router();
 
 //Request connection
-router.post("/", (req, res) => {
+connectionRoutes.post("/", (req, res) => {
     let host = req.body.host;
     let port = req.body.port;
 
@@ -16,4 +16,4 @@ router.post("/", (req, res) => {
     }, 3000);
 });
 
-export default router;
+export default connectionRoutes;
