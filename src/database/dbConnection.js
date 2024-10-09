@@ -9,8 +9,8 @@ const dbPassword = process.env.PASSWORD;
 
 // Create pool connection
 export const pool = createPool({
-    host:"localhost",
-    port:3306,
+    host: "localhost",
+    port: 3306,
     database: dbName,
     user: dbUser,
     password: dbPassword,

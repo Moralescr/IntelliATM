@@ -22,11 +22,11 @@ export function connection(host, port) {
 
         // IBM i response
         client.on('data', (data) => {
-            let response = "";
-            //console.log("servidor dice:", data.toString());
+            let messageResponse = "";
             //Get message to reply to the IBM i
-            response = getATMessageToReply(data.toString());
-            sendMessage(response); //Sent response to IBM i
+            console.log(data.toString());
+            messageResponse = getATMessageToReply(data.toString());
+            sendMessage(messageResponse); //Sent response to IBM i
         });
     }
 }
