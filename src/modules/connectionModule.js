@@ -1,6 +1,6 @@
 import net from 'net';
 
-import { getATMessageToReply } from '../modules/atmModule.js';
+import { parseMessage } from '../modules/atmModule.js';
 
 let client = "";
 export let isConnected = false;
@@ -13,22 +13,22 @@ export function connection(host, port) {
         client = net.createConnection(port, host, () => {
             console.log('ATM CONECTADO');
             isConnected = true;  
-        });
-        
-        //Connection error
-        client.on('error', (error) => {
-            console.log("ATM se ha desconectado: ", error.message);
-        });  
-
-        // IBM i response
-        client.on('data', (data) => {
-            let messageResponse = "";
-            //Get message to reply to the IBM i
-            console.log(data.toString());
-            messageResponse = getATMessageToReply(data.toString());
-            sendMessage(messageResponse); //Sent response to IBM i
-        });
+        }); 
     }
+
+     //Connection error
+     client.on('error', (error) => {
+        console.log("ATM se ha desconectado: ", error.message);
+    });  
+
+    // IBM i response
+    client.on('data', (data) => {
+        let messageResponse = "";
+        //Get message to reply to the IBM i
+        console.log(data.toString());
+        messageResponse = parseMessage(data.toString());
+        //sendMessage(messageResponse); //Sent response to IBM i
+    });
 }
 
 //Message request and response
@@ -41,7 +41,7 @@ export function sendMessage(data) {
     return isMessageSent;
 }
 
-//Get message length (Header)
+//Get message length (Header) - REQUEST
 function getOutgoingMessageLength(data) {
     return String.fromCharCode(data.length / 256) + String.fromCharCode(data.length % 256);
 }
