@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {parseMessage} from '../modules/atmModule.js';
+import {parseMessageClass} from '../modules/atmModule.js';
 
 const atmRoutes = Router();
 
