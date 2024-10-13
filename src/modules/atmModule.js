@@ -39,12 +39,15 @@ export function parseTerminalCommand(messageParsed){
     let commandCode = messageParsed[3];
     let luno = messageParsed[1];
     let messageSolicited = "";
+    let status = "";
     switch(commandCode){
         case '1': //Go in‐service (start‐up).
-            messageSolicited = `22\x1c${luno}\x1c\x1c9`;
+            status = buildSolicitedStatus("Ready");
+            messageSolicited = `22\x1c${luno}\x1c\x1c${status}`;
             break;
         case '2': //Go out‐of‐service (shut‐down).
-            messageSolicited = `22\x1c${luno}\x1c\x1c9`;
+            status = buildSolicitedStatus("Ready");
+            messageSolicited = `22\x1c${luno}\x1c\x1c${status}`;
             break;  
         case '3': //Send configuration ID.
             break; 
@@ -58,6 +61,25 @@ export function parseTerminalCommand(messageParsed){
     }
     return messageSolicited;
 }
+
+export function buildSolicitedStatus(status){
+    let statusValue = "";
+    switch (status) {
+        case "Ready":
+            statusValue = "9"; // 9 or B(Transaction reply)
+            break;
+        case "Command Reject":
+            statusValue = "A"            
+            break;
+        case "Specific Command Reject":
+            statusValue = "C"
+            break; 
+        default:
+            statusValue = "A"
+            break;
+    }
+    return statusValue;
+} 
 
 //Checks first two bytes of incoming message to get the length
 export function getIncomingMessageLength(message){
