@@ -6,12 +6,17 @@ export function parseMessageClass(data) {
     let messageResponse = "";
     let messageParsed = data.substring(2).split('\x1c');  //Create array with message fields
     let messageClass = messageParsed[0].trim();           //Get message class
+
+    let messageObject = {
+        messageClass: messageClass
+    }
     
     switch(messageClass) {
         case '1': //Terminal commands
             messageResponse = parseTerminalCommand(messageParsed);
             break;
-        case '3': //Configuration or Download
+        case '3': //Data commands (Download, Key change)
+            messageResponse = parseDataCommand(messageParsed);
             break;
         case '4': //Message transaction reply
             break;
@@ -60,6 +65,11 @@ export function parseTerminalCommand(messageParsed){
             break;
     }
     return messageSolicited;
+}
+
+//Data commands
+export function parseDataCommand(){
+    //code here
 }
 
 export function buildSolicitedStatus(status){

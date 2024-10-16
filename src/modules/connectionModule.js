@@ -3,7 +3,7 @@ import net from 'net';
 import { parseMessageClass } from '../modules/atmModule.js';
 
 let client = "";
-export let isConnected = false;
+let isConnected = false;
 
 //Set connection with host
 export function connection(host, port) {
@@ -18,10 +18,11 @@ export function connection(host, port) {
 
      //Connection error
      client.on('error', (error) => {
+        isConnected = false;  
         console.log("ATM se ha desconectado: ", error.message);
     });  
 
-    // IBM i response
+    // Host response
     client.on('data', (data) => {
         let messageResponse = "";
         //Get message to reply to the host
@@ -46,4 +47,6 @@ function getOutgoingMessageLength(data) {
     return String.fromCharCode(data.length / 256) + String.fromCharCode(data.length % 256);
 }
 
- 
+export {
+    isConnected
+} 
