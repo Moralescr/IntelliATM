@@ -1,19 +1,22 @@
 import { Router } from 'express';
-import {connection, isConnected} from '../modules/connectionModule.js';
+import { connect } from '../modules/connectionModule.js';
 
 const connectionRoutes = Router();
 
 //Request connection
-connectionRoutes.post("/", (req, res) => {
+connectionRoutes.post("/", async (req, res) => {
     let host = req.body.host;
     let port = req.body.port;
 
     //Set ATM connection
-    connection(host, port); 
-
-    setTimeout(() => {
-        return res.send(isConnected);
-    }, 3000);
+    const connectionStatus = await connect(host, port);
+    try {
+        console.log('Estado de la conexión: ', connectionStatus);
+        return res.send(connectionStatus);
+    } catch (error) {
+        console.log('Error de la conexión: ', error);
+        return res.status(500).send('Error al conectar al ATM: ' + error.message)
+    }
 });
 
 export default connectionRoutes;

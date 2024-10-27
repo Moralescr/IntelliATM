@@ -6,29 +6,39 @@ let client = "";
 let isConnected = false;
 
 //Set connection with host
-export function connection(host, port) {
+export function connect(host, port) {
+    return new Promise((resolve, reject) => {
+        if (!isConnected) {
+            //Create connection
+            client = net.createConnection(port, host, () => {
+                console.log('ATM CONECTADO');
+                isConnected = true;
+                resolve(isConnected);
+            });
+        }
+        // Host response
+        client.on('data', (data) => {
+            let messageResponse = "";
+            console.log(data.toString());
+            //Get and parse message to reply to the host
+            messageResponse = parseMessageClass(data.toString('utf8'));
+            sendMessage(messageResponse); //Sent response to host
+        });
 
-    if (!isConnected) {
-        //Create connection
-        client = net.createConnection(port, host, () => {
-            console.log('ATM CONECTADO');
-            isConnected = true;  
-        }); 
-    }
+        //Connection error
+        client.on('error', (error) => {
+            isConnected = false;
+            console.log("Error de conexión: ", error.message);
+            reject(err);
+        });
 
-     //Connection error
-     client.on('error', (error) => {
-        isConnected = false;  
-        console.log("ATM se ha desconectado: ", error.message);
-    });  
+        //Connection end
+        client.on('end', () => {
+            isConnected = false;
+            console.log('Desconectado del servidor');
+            reject(err);
+        });
 
-    // Host response
-    client.on('data', (data) => {
-        let messageResponse = "";
-        //Get message to reply to the host
-        console.log(data.toString());
-        messageResponse = parseMessageClass(data.toString('utf8'));
-        sendMessage(messageResponse); //Sent response to host
     });
 }
 
@@ -46,7 +56,3 @@ export function sendMessage(data) {
 function getOutgoingMessageLength(data) {
     return String.fromCharCode(data.length / 256) + String.fromCharCode(data.length % 256);
 }
-
-export {
-    isConnected
-} 
