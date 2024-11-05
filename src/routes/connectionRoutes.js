@@ -4,10 +4,10 @@ import { connect } from '../modules/connectionModule.js';
 const connectionRoutes = Router();
 
 //Request connection
-connectionRoutes.post("/", async (req, res) => {
+connectionRoutes.post("/", async(req, res) => {
+
     let host = req.body.host;
     let port = req.body.port;
-
     //Set ATM connection
     const connectionStatus = await connect(host, port);
     try {
