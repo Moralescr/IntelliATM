@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { sendMessage, hostResponse } from '../modules/connectionModule.js';
 
 const atmRoutes = Router();
-
+     
 //Transaccion request
 atmRoutes.post("/", async (req, res) => {
     //Transaction request to host

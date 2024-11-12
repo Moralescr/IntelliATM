@@ -1,5 +1,5 @@
-import {sendMessage} from '../modules/connectionModule.js';
-import {pool} from '../database/dbConnection.js';
+import { sendMessage } from '../modules/connectionModule.js';
+import { pool } from '../database/dbConnection.js';
 
 //Parse the message from host
 export function parseMessageClass(data) {
@@ -10,8 +10,8 @@ export function parseMessageClass(data) {
     let messageObject = {
         messageClass: messageClass
     }
-    
-    switch(messageClass) {
+
+    switch (messageClass) {
         case '1': //Terminal commands
             messageResponse = parseTerminalCommand(messageParsed);
             break;
@@ -19,6 +19,7 @@ export function parseMessageClass(data) {
             messageResponse = parseDataCommand(messageParsed);
             break;
         case '4': //Message transaction reply
+            messageResponse = parseTransactionReply(messageParsed);
             break;
         case '8': //EMV configuration
             break;
@@ -40,12 +41,12 @@ export function parseMessageClass(data) {
      '*': Field separator
      '1': Command code(Go in‐service)
 */
-export function parseTerminalCommand(messageParsed){
+export function parseTerminalCommand(messageParsed) {
     let commandCode = messageParsed[3];
     let luno = messageParsed[1];
     let messageSolicited = "";
     let status = "";
-    switch(commandCode){
+    switch (commandCode) {
         case '1': //Go in‐service (start‐up).
             status = buildSolicitedStatus("Ready");
             messageSolicited = `22\x1c${luno}\x1c\x1c${status}`;
@@ -53,13 +54,13 @@ export function parseTerminalCommand(messageParsed){
         case '2': //Go out‐of‐service (shut‐down).
             status = buildSolicitedStatus("Ready");
             messageSolicited = `22\x1c${luno}\x1c\x1c${status}`;
-            break;  
+            break;
         case '3': //Send configuration ID.
-            break; 
+            break;
         case '4': //Send supply counters.
             break;
         case '7': //Send configuration information.
-            break;   
+            break;
         default:
             console.log("Command code not found");
             break;
@@ -68,34 +69,50 @@ export function parseTerminalCommand(messageParsed){
 }
 
 //Data commands
-export function parseDataCommand(){
+export function parseDataCommand() {
     //code here
 }
 
-export function buildSolicitedStatus(status){
+//Transaction reply
+export function parseTransactionReply(msgReply) {
+
+    console.log("REPLY: ", msgReply);
+    const jsonReply = {
+        atmCode: msgReply[1],
+        nextState: msgReply[3],
+        dispensation: msgReply[4],
+        amount: msgReply[5],
+    }
+    const messageReply = JSON.stringify(jsonReply, null, 2);
+    return messageReply;
+}
+
+
+
+export function buildSolicitedStatus(status) {
     let statusValue = "";
     switch (status) {
         case "Ready":
             statusValue = "9"; // 9 or B(Transaction reply)
             break;
         case "Command Reject":
-            statusValue = "A"            
+            statusValue = "A"
             break;
         case "Specific Command Reject":
             statusValue = "C"
-            break; 
+            break;
         default:
             statusValue = "A"
             break;
     }
     return statusValue;
-} 
+}
 
 //Checks first two bytes of incoming message to get the length
-export function getIncomingMessageLength(message){
+export function getIncomingMessageLength(message) {
     let len = parseInt(message.charCodeAt(0), 10) * 256 + parseInt(message.charCodeAt(1), 10);
-    if(!isNaN(len))
-      return len;
+    if (!isNaN(len))
+        return len;
     else
-      return 0;
+        return 0;
 }

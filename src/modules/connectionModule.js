@@ -14,16 +14,17 @@ export function connect(host, port) {
                 console.log('ATM CONNECTED');
                 isConnected = true;
                 resolve(isConnected);
-            });
-
+            });           
+            /*
             // Host response
-            /*client.on('data', (data) => {
+            client.on('data', (data) => {
                 let messageResponse = "";
                 console.log(data.toString());
                 //Get and parse message to reply to the host
                 messageResponse = parseMessageClass(data.toString('utf8'));
                 sendMessage(messageResponse); //Sent response to host
-            });*/
+            }); 
+            */
 
             //Connection error
             client.on('error', (error) => {
@@ -49,7 +50,7 @@ export function connect(host, port) {
 export function sendMessage(data) {
     let binaryData = "";
     binaryData = Buffer.from(getOutgoingMessageLength(data) + data, 'binary');
-    console.log("Mensaje enviado: ", binaryData.toString('utf8'));
+    //console.log("Mensaje enviado: ", binaryData.toString('utf8'));
     client.write(binaryData);
 }
 
@@ -60,7 +61,7 @@ export function hostResponse() {
             let messageResponse = "";
             console.log(data.toString());
             //Get and parse message to reply to the host
-            messageResponse = data.toString(); // Call function to parse message (parseMessageClass)
+            messageResponse = parseMessageClass(data.toString());
             resolve(messageResponse);
         });
     });
